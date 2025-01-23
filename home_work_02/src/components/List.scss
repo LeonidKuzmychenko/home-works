@@ -1,0 +1,15 @@
+#animalTable {
+  border-collapse: collapse;
+
+  th, td {
+    border: 1px solid #000000;
+    padding: 8px;
+    text-align: center;
+    min-width: 80px;
+  }
+
+  .active {
+    color: red;
+    font-weight: bold;
+  }
+}
