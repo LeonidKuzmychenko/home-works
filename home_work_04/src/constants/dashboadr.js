@@ -1,3 +1,9 @@
+export const FORM_STATUSES = [
+    {status: 0, name: "To do"},
+    {status: 1, name: "In progress"},
+    {status: 2, name: "Done"}
+];
+
 export const STATUSES = new Map([
     [0, "To do"],
     [1, "In progress"],
