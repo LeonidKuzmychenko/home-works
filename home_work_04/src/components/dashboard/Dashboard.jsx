@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import "./Dashboard.scss"
 import tasksRepository from "../../repositories/tasksRepository.js";
 import DashboardColumn from "./DashboardColumn.jsx";
+import {DEFAULT_COLUMNS} from "../../constants/dashboadr.js";
 
 const Dashboard = () => {
     const [ticketMap, setTicketMap] = useState(new Map());
@@ -9,9 +10,12 @@ const Dashboard = () => {
     useEffect(() => {
         tasksRepository.get().then(tasks => {
             const statusMap = tasks.reduce((map, item) => {
+                if (!map.has(item.status)){
+                    return map;
+                }
                 map.get(item.status).push(item);
                 return map;
-            }, new Map([[0, []], [1, []], [2, []]]));
+            }, DEFAULT_COLUMNS);
             setTicketMap(statusMap)
         })
     }, []);
