@@ -1,7 +1,6 @@
 import {STATUSES} from '../../constants/dashboadr.js'
 import DashboardItem from "./DashboardItem.jsx";
 
-
 // eslint-disable-next-line react/prop-types
 const DashboardColumn = ({tickets, status, moveTask}) => {
     return <>

@@ -44,7 +44,7 @@ const Dashboard = () => {
     return <>
         <h1 className={"title"}>Dashboard</h1>
         <div className={"dashboard"}>
-            {[...ticketMap.keys()].sort((a, b) => a - b)
+            {[...ticketMap.keys()]
                 .map((status) => (
                     <DashboardColumn key= {status} tickets={ticketMap.get(status)} status={status} moveTask={moveTask}/>
                 ))}
