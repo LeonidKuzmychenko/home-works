@@ -10,7 +10,7 @@ const DashboardColumn = ({tickets, status, moveTask}) => {
             <h2 className={"column_title"}>{STATUSES.get(status)}: {tickets.length}</h2>
             {/* eslint-disable-next-line react/prop-types */}
             {tickets.map((item, index) => (
-                <DashboardItem key={item.id} item={item} status={status} index={index} moveTask={moveTask}/>
+                <DashboardItem key={index} item={item} status={status} index={index} moveTask={moveTask}/>
             ))}
         </div>
     </>

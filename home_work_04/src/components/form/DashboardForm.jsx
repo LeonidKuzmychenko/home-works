@@ -2,6 +2,7 @@ import {FORM_STATUSES} from "../../constants/dashboadr.js";
 import {useRef, useState} from "react";
 import "./DashboardForm.scss"
 
+// eslint-disable-next-line react/prop-types
 const DashboardForm = ({addNewTask}) => {
     const [selectedStatus, setSelectedStatus] = useState(0);
     const titleRef = useRef();
