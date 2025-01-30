@@ -42,7 +42,7 @@ const Dashboard = () => {
         }
     }
 
-    const addNewTask = async (item) => {
+    const addNewTask = (item) => {
         try {
             // const savedItem = await tasksRepository.post(item);
             updateStatusAndSave(new Map(ticketMap), item);
