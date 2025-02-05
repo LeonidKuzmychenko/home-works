@@ -1,0 +1,22 @@
+.battleContainer {
+  display: inline-flex;
+  gap: 10px;
+  flex-direction: column;
+
+  .battleUsersContainer{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: start;
+    padding: 10px;
+  }
+
+  .battleButtonContainer{
+    display: flex;
+    justify-content: center;
+  }
+  .battleRestartButtonContainer{
+    display: flex;
+    justify-content: center;
+  }
+}

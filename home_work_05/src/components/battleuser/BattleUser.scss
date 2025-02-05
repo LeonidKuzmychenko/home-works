@@ -1,0 +1,20 @@
+.battleUserContainer {
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  .battleUserImage{
+    width: 200px;
+  }
+  .battleUserLogin{
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+  }
+  .battleUserButtonContainer{
+    display: flex;
+    justify-content: center;
+  }
+}
