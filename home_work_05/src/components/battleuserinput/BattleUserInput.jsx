@@ -9,13 +9,12 @@ const BattleUserInput = ({index, submitUsername}) => {
     const handleUsername = (e) => {
         e.preventDefault()
         const username = usernameRef.current.value;
-        console.log("handleUsername " + username)
         submitUsername(index, username)
     }
 
     return <>
         <form className={"battleUserInfoForm"}>
-            <p>Choose {index} username</p>
+            <p>Choose <b>Player {index+1}</b> username</p>
             <input type={"text"} ref={usernameRef}/>
             <button onClick={handleUsername}>Submit</button>
         </form>

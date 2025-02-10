@@ -3,19 +3,19 @@ import BattleUser from "../battleuser/BattleUser.jsx";
 import BattleUserInput from "../battleuserinput/BattleUserInput.jsx";
 import "./Battle.scss"
 import gitRepository from "../../repositories/gitRepository.js";
+import INITIAL_VALUE from "../../constants/battleConstants.js";
 
 const Battle = () => {
 
     const [finish, setFinish] = useState(false);
 
+    // const actionCreator = (type, payload) => {
+    //     return {type, payload}
+    // }
     const reducer = (state, action) => {
-        console.log("reducer")
-        console.log(`state ${state}`)
-        console.log(action)
         if (action.type === "submitUsername") {
-            console.log("submitUsername")
             return state.map((user, idx) =>
-                idx === action.index
+                idx === action.payload.index
                     ? {
                         ...user,
                         followers: action.payload.followers,
@@ -26,7 +26,7 @@ const Battle = () => {
             );
         }
         if (action.type === "reset") {
-            return state.map((user, idx) => (idx === action.index ? null : user));
+            return state.map((user, idx) => (idx === action.payload.index ? null : user));
         }
         if (action.type === "battle") {
             return state.map((user, idx) => {
@@ -40,39 +40,36 @@ const Battle = () => {
             );
         }
         if (action.type === "restart") {
-            return [null, null];
+            return INITIAL_VALUE;
         }
         return state;
     }
 
-    const [state, dispatch] = useReducer(reducer, [null, null]);
+    const [state, dispatch] = useReducer(reducer, INITIAL_VALUE);
 
     const battle = async () => {
-        console.log("battle!");
         try {
-            const userRepoInfo1 = await gitRepository.getUserRepoInfo(state[0].login);
-            const userRepoInfo2 = await gitRepository.getUserRepoInfo(state[1].login);
+            const userRepoInfos = await Promise.all(
+                state.map(user => gitRepository.getUserRepoInfo(user.login))
+            );
 
-            const stars1 = userRepoInfo1.reduce((sum, repo) => sum + (repo.stargazers_count || 0), 0);
-            const stars2 = userRepoInfo2.reduce((sum, repo) => sum + (repo.stargazers_count || 0), 0);
+            const stars = userRepoInfos.map(repos =>
+                repos.reduce((sum, repo) => sum + (repo.stargazers_count || 0), 0)
+            );
 
-            const total1 = state[0].followers + stars1;
-            const total2 = state[1].followers + stars2;
+            const totals = state.map((user, index) => user.followers + stars[index]);
 
-            const isWinner1 = total1 > total2;
-            const isWinner2 = total2 > total1;
+            const maxTotal = Math.max(...totals);
+            const winner = totals.map(total => total === maxTotal);
 
             dispatch({
                 type: "battle",
-                payload: {
-                    stars: [stars1, stars2],
-                    total: [total1, total2],
-                    winner: [isWinner1, isWinner2]
-                },
+                payload: {stars: stars, total: totals, winner: winner}
             });
-            setFinish(true)
-        } catch (error) {
-            console.error("Ошибка при загрузке данных репозиториев:", error);
+
+            setFinish(true);
+        } catch (e) {
+            console.error(e);
         }
     };
 
@@ -82,7 +79,7 @@ const Battle = () => {
     }
 
     const reset = (index) => {
-        dispatch({type: "reset", index: index})
+        dispatch({type: "reset", payload: {index: index}})
     }
 
     const submitUsername = async (index, username) => {
@@ -90,8 +87,10 @@ const Battle = () => {
             const userInfo = await gitRepository.getUserInfo(username)
             dispatch({
                 type: "submitUsername",
-                index,
-                payload: userInfo,
+                payload: {
+                    index: index,
+                    ...userInfo
+                },
             });
         } catch (e) {
             console.log(e);
@@ -100,32 +99,28 @@ const Battle = () => {
     }
 
     return <>
+
         <div className={"battleContainer"}>
+            <h1 className={"battleTitle"}>Let&#39;s Get Ready to Rumble 🥊</h1>
             <div className={"battleUsersContainer"}>
-                {state[0] == null
-                    ? <BattleUserInput index={0} submitUsername={submitUsername}/>
-                    : <BattleUser
-                        index={0}
-                        userInfo={state[0]}
-                        reset={reset}
-                    />
-                }
-                {state[1] == null
-                    ? <BattleUserInput index={1} submitUsername={submitUsername}/>
-                    : <BattleUser
-                        index={1}
-                        userInfo={state[1]}
-                        reset={reset}
-                    />
+                {
+                    state.map((state, id) => {
+                        return <>
+                            {state == null
+                                ? <BattleUserInput index={id} submitUsername={submitUsername}/>
+                                : <BattleUser index={id} userInfo={state} reset={reset}/>
+                            }
+                        </>
+                    })
                 }
             </div>
-            {state[0] != null && state[1] != null && finish
+            {state.every(value => value !== null) && finish
                 ? <div className={"battleRestartButtonContainer"}>
                     <button onClick={restart}>Restart 🔄</button>
                 </div>
                 : null
             }
-            {state[0] != null && state[1] != null && !finish
+            {state.every(value => value !== null) && !finish
                 ? <div className={"battleButtonContainer"}>
                     <button onClick={battle}>Battle!</button>
                 </div>
