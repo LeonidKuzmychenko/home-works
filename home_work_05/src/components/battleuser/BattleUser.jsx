@@ -1,40 +1,29 @@
 import "./BattleUser.scss"
 
 // eslint-disable-next-line react/prop-types
-const BattleUser = ({playerName, userInfo, reset, userRepoInfo}) => {
+const BattleUser = ({index, userInfo, reset}) => {
     const handleReset = () => {
-        reset(playerName)
+        reset(index)
     }
-
-    const getFollowers = () =>{
-        return userInfo.followers;
-    }
-
-    const getRepositoriesStars = () =>{
-        return userRepoInfo.reduce((sum, repo) => sum + (repo.stargazers_count || 0), 0);
-    }
-
-    const getTotalScore = () =>{
-        return getFollowers() + getRepositoriesStars();
-    }
-
-
 
     return <div className={"battleUserContainer"}>
-        {/* eslint-disable-next-line react/prop-types */}
-        <img className={"battleUserImage"} src={userInfo.avatar_url}/>
-        {/* eslint-disable-next-line react/prop-types */}
-        <p className={"battleUserLogin"}>@{userInfo.login}</p>
-        {userRepoInfo == null
-            ? <div className={"battleUserButtonContainer"}>
-                <button className={"battleUserButton"} onClick={handleReset}>Reset</button>
-            </div>
-            : <div className={"battleUserRepoInfoContainer"}>
-                <p>Followers: {getFollowers()} </p>
-                <p>Repositories stars: {getRepositoriesStars()}</p>
-                <p>Total score: {getTotalScore()}</p>
-            </div>
-        }
+    {userInfo.winner == null? null: <h2>{userInfo.winner?"Winner":"Loser"}</h2>}
+        <div className={"battleUserCardContainer"}>
+            {/* eslint-disable-next-line react/prop-types */}
+            <img className={"battleUserImage"} src={userInfo.avatar_url}/>
+            {/* eslint-disable-next-line react/prop-types */}
+            <p className={"battleUserLogin"}>@{userInfo.login}</p>
+            {userInfo.stars == null
+                ? <div className={"battleUserButtonContainer"}>
+                    <button className={"battleUserButton"} onClick={handleReset}>Reset</button>
+                </div>
+                : <div className={"battleUserRepoInfoContainer"}>
+                    <p>Followers: {userInfo.followers}</p>
+                    <p>Repositories stars: {userInfo.stars}</p>
+                    <p>Total score: {userInfo.total}</p>
+                </div>
+            }
+        </div>
     </div>
 }
 

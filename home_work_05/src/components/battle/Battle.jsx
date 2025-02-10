@@ -1,113 +1,138 @@
-import {useEffect, useState} from "react";
+import {useReducer, useState} from "react";
 import BattleUser from "../battleuser/BattleUser.jsx";
 import BattleUserInput from "../battleuserinput/BattleUserInput.jsx";
 import "./Battle.scss"
 import gitRepository from "../../repositories/gitRepository.js";
-import BattleUsersContext from "../../context/BattleUsersContext.jsx";
 
 const Battle = () => {
-    const [userInfo1, setUserInfo1] = useState(null)
-    const [userInfo2, setUserInfo2] = useState(null)
 
-    const [userRepoInfo1, setUserRepoInfo1] = useState(null)
-    const [userRepoInfo2, setUserRepoInfo2] = useState(null)
+    const [finish, setFinish] = useState(false);
 
-    useEffect(() => {
-        setUserRepoInfo1(null)
-    }, [userInfo1]);
+    const reducer = (state, action) => {
+        console.log("reducer")
+        console.log(`state ${state}`)
+        console.log(action)
+        if (action.type === "submitUsername") {
+            console.log("submitUsername")
+            return state.map((user, idx) =>
+                idx === action.index
+                    ? {
+                        ...user,
+                        followers: action.payload.followers,
+                        avatar_url: action.payload.avatar_url,
+                        login: action.payload.login
+                    }
+                    : user
+            );
+        }
+        if (action.type === "reset") {
+            return state.map((user, idx) => (idx === action.index ? null : user));
+        }
+        if (action.type === "battle") {
+            return state.map((user, idx) => {
+                    return {
+                        ...user,
+                        stars: action.payload.stars[idx],
+                        total: action.payload.total[idx],
+                        winner: action.payload.winner[idx]
+                    }
+                }
+            );
+        }
+        if (action.type === "restart") {
+            return [null, null];
+        }
+        return state;
+    }
 
-    useEffect(() => {
-        setUserRepoInfo2(null)
-    }, [userInfo2]);
+    const [state, dispatch] = useReducer(reducer, [null, null]);
 
     const battle = async () => {
-        console.log("battle!")
+        console.log("battle!");
         try {
-            const userRepoInfo1 = await getUserRepoInfo(userInfo1.login);
-            setUserRepoInfo1(userRepoInfo1);
-            const userRepoInfo2 = await getUserRepoInfo(userInfo2.login);
-            setUserRepoInfo2(userRepoInfo2);
-        } catch (e) {
-            console.log(e);
-        }
-    }
+            const userRepoInfo1 = await gitRepository.getUserRepoInfo(state[0].login);
+            const userRepoInfo2 = await gitRepository.getUserRepoInfo(state[1].login);
 
-    const getUserRepoInfo = async (username) => {
-        try {
-            return await gitRepository.getUserRepoInfo(username);
-        } catch (e) {
-            console.log(e);
+            const stars1 = userRepoInfo1.reduce((sum, repo) => sum + (repo.stargazers_count || 0), 0);
+            const stars2 = userRepoInfo2.reduce((sum, repo) => sum + (repo.stargazers_count || 0), 0);
+
+            const total1 = state[0].followers + stars1;
+            const total2 = state[1].followers + stars2;
+
+            const isWinner1 = total1 > total2;
+            const isWinner2 = total2 > total1;
+
+            dispatch({
+                type: "battle",
+                payload: {
+                    stars: [stars1, stars2],
+                    total: [total1, total2],
+                    winner: [isWinner1, isWinner2]
+                },
+            });
+            setFinish(true)
+        } catch (error) {
+            console.error("Ошибка при загрузке данных репозиториев:", error);
         }
-    }
+    };
 
     const restart = () => {
-        setUserInfo1(null);
-        setUserInfo2(null);
-        setUserRepoInfo1(null);
-        setUserRepoInfo2(null);
+        dispatch({type: "restart"});
+        setFinish(false)
     }
 
-    const reset = (playerName) => {
-        if (playerName === "Player 1") {
-            setUserInfo1(null);
-            return;
-        }
-        if (playerName === "Player 2") {
-            setUserInfo2(null);
-            return;
-        }
+    const reset = (index) => {
+        dispatch({type: "reset", index: index})
     }
 
-    const submitUsername = async (playerName, username) => {
+    const submitUsername = async (index, username) => {
         try {
             const userInfo = await gitRepository.getUserInfo(username)
-            console.table(userInfo);
-            if (playerName === "Player 1") {
-                setUserInfo1(userInfo);
-                return;
-            }
-            if (playerName === "Player 2") {
-                setUserInfo2(userInfo);
-                return;
-            }
+            dispatch({
+                type: "submitUsername",
+                index,
+                payload: userInfo,
+            });
         } catch (e) {
             console.log(e);
         }
+
     }
 
     return <>
-        <BattleUsersContext.Provider value={{}}>
-            <div className={"battleContainer"}>
-                <div className={"battleUsersContainer"}>
-                    {userInfo1 == null
-                        ? <BattleUserInput playerName={"Player 1"} submitUsername={submitUsername}/>
-                        : <BattleUser
-                            playerName={"Player 1"}
-                            userInfo={userInfo1}
-                            reset={reset}
-                            userRepoInfo={userRepoInfo1}/>
-                    }
-                    {userInfo2 == null
-                        ? <BattleUserInput playerName={"Player 2"} submitUsername={submitUsername}/>
-                        : <BattleUser
-                            playerName={"Player 2"}
-                            userInfo={userInfo2}
-                            reset={reset}
-                            userRepoInfo={userRepoInfo2}/>
-                    }
-                </div>
-                {userInfo1 != null && userInfo2 != null && userRepoInfo1 == null && userRepoInfo2 == null
-                    ? <div className={"battleButtonContainer"}>
-                        <button onClick={battle}>Battle!</button>
-                    </div>
-                    : null}
-                {userRepoInfo1 != null && userRepoInfo2 != null
-                    ? <div className={"battleRestartButtonContainer"}>
-                        <button onClick={restart}>Restart 🔄</button>
-                    </div>
-                    : null}
+        <div className={"battleContainer"}>
+            <div className={"battleUsersContainer"}>
+                {state[0] == null
+                    ? <BattleUserInput index={0} submitUsername={submitUsername}/>
+                    : <BattleUser
+                        index={0}
+                        userInfo={state[0]}
+                        reset={reset}
+                    />
+                }
+                {state[1] == null
+                    ? <BattleUserInput index={1} submitUsername={submitUsername}/>
+                    : <BattleUser
+                        index={1}
+                        userInfo={state[1]}
+                        reset={reset}
+                    />
+                }
             </div>
-        </BattleUsersContext.Provider>
+            {state[0] != null && state[1] != null && finish
+                ? <div className={"battleRestartButtonContainer"}>
+                    <button onClick={restart}>Restart 🔄</button>
+                </div>
+                : null
+            }
+            {state[0] != null && state[1] != null && !finish
+                ? <div className={"battleButtonContainer"}>
+                    <button onClick={battle}>Battle!</button>
+                </div>
+                : null
+            }
+
+        </div>
     </>
 }
 

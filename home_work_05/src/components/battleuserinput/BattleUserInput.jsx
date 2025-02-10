@@ -2,19 +2,20 @@ import "./BattleUserInput.scss"
 import {useRef} from "react";
 
 // eslint-disable-next-line react/prop-types
-const BattleUserInput = ({playerName, submitUsername}) => {
+const BattleUserInput = ({index, submitUsername}) => {
 
     const usernameRef = useRef();
 
     const handleUsername = (e) => {
         e.preventDefault()
         const username = usernameRef.current.value;
-        submitUsername(playerName, username)
+        console.log("handleUsername " + username)
+        submitUsername(index, username)
     }
 
     return <>
         <form className={"battleUserInfoForm"}>
-            <p>Choose {playerName} username</p>
+            <p>Choose {index} username</p>
             <input type={"text"} ref={usernameRef}/>
             <button onClick={handleUsername}>Submit</button>
         </form>
