@@ -1,5 +1,3 @@
 import {createContext} from "react";
 
-const BattleUsersContext = createContext(null)
-
-export default BattleUsersContext;
+export const BattleUsersContext = createContext(null)

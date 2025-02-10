@@ -1,3 +1,1 @@
-const INITIAL_VALUE = [null, null, null]
-
-export default INITIAL_VALUE;
+export const INITIAL_VALUE = [null, null, null]

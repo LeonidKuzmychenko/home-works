@@ -3,49 +3,13 @@ import BattleUser from "../battleuser/BattleUser.jsx";
 import BattleUserInput from "../battleuserinput/BattleUserInput.jsx";
 import "./Battle.scss"
 import gitRepository from "../../repositories/gitRepository.js";
-import INITIAL_VALUE from "../../constants/battleConstants.js";
+import {INITIAL_VALUE} from "../../constants/battleConstants.js";
+import {reducer} from "../reducer.js";
+import {actionCreator, BATTLE, RESET, RESTART, SUBMIT_USERNAME} from "../actions.js";
 
 const Battle = () => {
 
     const [finish, setFinish] = useState(false);
-
-    const actionCreator = (type, payload) => {
-        return {type, payload}
-    }
-
-    const reducer = (state, action) => {
-        if (action.type === "submitUsername") {
-            return state.map((user, idx) =>
-                idx === action.payload.index
-                    ? {
-                        ...user,
-                        followers: action.payload.followers,
-                        avatar_url: action.payload.avatar_url,
-                        login: action.payload.login
-                    }
-                    : user
-            );
-        }
-        if (action.type === "reset") {
-            return state.map((user, idx) => (idx === action.payload.index ? null : user));
-        }
-        if (action.type === "battle") {
-            return state.map((user, idx) => {
-                    return {
-                        ...user,
-                        stars: action.payload.stars[idx],
-                        total: action.payload.total[idx],
-                        winner: action.payload.winner[idx]
-                    }
-                }
-            );
-        }
-        if (action.type === "restart") {
-            return INITIAL_VALUE;
-        }
-        return state;
-    }
-
     const [state, dispatch] = useReducer(reducer, INITIAL_VALUE);
 
     const battle = async () => {
@@ -53,21 +17,13 @@ const Battle = () => {
             const userRepoInfos = await Promise.all(
                 state.map(user => gitRepository.getUserRepoInfo(user.login))
             );
-
             const stars = userRepoInfos.map(repos =>
                 repos.reduce((sum, repo) => sum + (repo.stargazers_count || 0), 0)
             );
-
-            const totals = state.map((user, index) => user.followers + stars[index]);
-
-            const maxTotal = Math.max(...totals);
-            const winner = totals.map(total => total === maxTotal);
-
-            dispatch(actionCreator(
-                "battle",
-                {stars: stars, total: totals, winner: winner}
-            ));
-
+            const total = state.map((user, index) => user.followers + stars[index]);
+            const maxTotal = Math.max(...total);
+            const winner = total.map(total => total === maxTotal);
+            dispatch(actionCreator(BATTLE, {stars, total, winner}));
             setFinish(true);
         } catch (e) {
             console.error(e);
@@ -75,35 +31,23 @@ const Battle = () => {
     };
 
     const restart = () => {
-        dispatch(actionCreator(
-            "restart"
-        ));
+        dispatch(actionCreator(RESTART));
         setFinish(false)
     }
 
     const reset = (index) => {
-        dispatch(actionCreator(
-            "reset",
-            {index: index}
-        ));
+        dispatch(actionCreator(RESET, {index: index}));
     }
 
     const submitUsername = async (index, username) => {
         try {
             const userInfo = await gitRepository.getUserInfo(username)
-            dispatch(
-                actionCreator(
-                    "submitUsername",
-                    {index: index, ...userInfo}
-                ));
+            dispatch(actionCreator(SUBMIT_USERNAME, {index: index, ...userInfo}));
         } catch (e) {
             console.log(e);
         }
-
     }
-
     return <>
-
         <div className={"battleContainer"}>
             <h1 className={"battleTitle"}>Let&#39;s Get Ready to Rumble 🥊</h1>
             <div className={"battleUsersContainer"}>
@@ -130,7 +74,6 @@ const Battle = () => {
                 </div>
                 : null
             }
-
         </div>
     </>
 }
