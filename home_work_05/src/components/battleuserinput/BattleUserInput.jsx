@@ -1,10 +1,12 @@
 import "./BattleUserInput.scss"
-import {useRef} from "react";
+import {useContext, useRef} from "react";
+import BattleContext from "../../contexts/BattleContext.jsx";
 
 // eslint-disable-next-line react/prop-types
-const BattleUserInput = ({index, submitUsername}) => {
+const BattleUserInput = ({index}) => {
 
     const usernameRef = useRef();
+    const {submitUsername} = useContext(BattleContext);
 
     const handleUsername = (e) => {
         e.preventDefault()

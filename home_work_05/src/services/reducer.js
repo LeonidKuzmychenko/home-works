@@ -1,34 +1,21 @@
 import {BATTLE, RESET, RESTART, SUBMIT_USERNAME} from "./actions.js";
 import {INITIAL_VALUE} from "../constants/battleConstants.js";
 
-export const reducer = (state = INITIAL_VALUE, {type, payload}) => {
-    switch (type) {
-        case SUBMIT_USERNAME:
-            return state.map((user, idx) =>
-                idx === payload.index
-                    ? {
-                        ...user,
-                        followers: payload.followers,
-                        avatar_url: payload.avatar_url,
-                        login: payload.login
-                    }
-                    : user
-            );
-        case RESET:
-            return state.map((user, idx) => (idx === payload.index ? null : user));
-        case BATTLE:
-            return state.map((user, idx) => {
-                    return {
-                        ...user,
-                        stars: payload.stars[idx],
-                        total: payload.total[idx],
-                        winner: payload.winner[idx]
-                    }
-                }
-            );
-        case RESTART:
-            return INITIAL_VALUE;
-        default:
-            return state;
-    }
-}
+export const reducer = (state = INITIAL_VALUE, { type, payload }) => {
+    const actions = new Map([
+        [SUBMIT_USERNAME, () =>
+            state.map((user, idx) =>
+                idx === payload.index ? { ...user, ...payload } : user
+            )
+        ],
+        [RESET, () => state.map((user, idx) => (idx === payload.index ? null : user))],
+        [BATTLE, () =>
+            state.map((user, idx) => ({
+                ...user,
+                ...Object.fromEntries(["stars", "total", "winner"].map(key => [key, payload[key][idx]]))
+            }))
+        ],
+        [RESTART, () => INITIAL_VALUE]
+    ]);
+    return actions.get(type)?.() ?? state;
+};

@@ -1,17 +1,18 @@
 import "./BattleUser.scss"
+import {useContext} from "react";
+import BattleContext from "../../contexts/BattleContext.jsx";
 
 // eslint-disable-next-line react/prop-types
-const BattleUser = ({index, userInfo, reset}) => {
+const BattleUser = ({index, userInfo}) => {
+    const {reset} = useContext(BattleContext);
     const handleReset = () => {
         reset(index)
     }
 
     return <div className={"battleUserContainer"}>
-    {userInfo.winner == null? null: <h2>{userInfo.winner?"Winner":"Loser"}</h2>}
+        {userInfo.winner == null ? null : <h2>{userInfo.winner ? "Winner" : "Loser"}</h2>}
         <div className={"battleUserCardContainer"}>
-            {/* eslint-disable-next-line react/prop-types */}
-            <img className={"battleUserImage"} src={userInfo.avatar_url}/>
-            {/* eslint-disable-next-line react/prop-types */}
+            <img className={"battleUserImage"} src={userInfo.avatar_url} alt={"image"}/>
             <p className={"battleUserLogin"}>@{userInfo.login}</p>
             {userInfo.stars == null
                 ? <div className={"battleUserButtonContainer"}>

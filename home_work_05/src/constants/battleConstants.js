@@ -1,1 +1,1 @@
-export const INITIAL_VALUE = [null, null, null]
+export const INITIAL_VALUE = [null, null]
