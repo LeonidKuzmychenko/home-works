@@ -1,11 +1,11 @@
-import {BATTLE, RESET, RESTART, SUBMIT_USERNAME} from "./actions.js";
+import {BATTLE, RESET, RESTART, SUBMIT} from "./actions.js";
 import {INITIAL_VALUE} from "../constants/battleConstants.js";
 
-export const reducer = (state = INITIAL_VALUE, { type, payload }) => {
+export const reducer = (state = INITIAL_VALUE, {type, payload}) => {
     const actions = new Map([
-        [SUBMIT_USERNAME, () =>
+        [SUBMIT, () =>
             state.map((user, idx) =>
-                idx === payload.index ? { ...user, ...payload } : user
+                idx === payload.index ? {...user, ...payload} : user
             )
         ],
         [RESET, () => state.map((user, idx) => (idx === payload.index ? null : user))],

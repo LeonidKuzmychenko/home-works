@@ -1,4 +1,4 @@
-export const SUBMIT_USERNAME = "submitUsername"
+export const SUBMIT = "submit"
 export const RESET = "reset"
 export const BATTLE = "battle"
 export const RESTART = "restart"

@@ -1,27 +1,24 @@
-import "./BattleUserInput.scss"
-import {useContext, useRef} from "react";
-import BattleContext from "../../contexts/BattleContext.jsx";
+import "./BattleUserInput.scss";
+import useBattleInput from "../../hooks/useBattleInput.jsx";
 
 // eslint-disable-next-line react/prop-types
 const BattleUserInput = ({index}) => {
+    const {handleUsername, usernameRef, errorText, setErrorText} = useBattleInput(index)
 
-    const usernameRef = useRef();
-    const {submitUsername} = useContext(BattleContext);
-
-    const handleUsername = (e) => {
-        e.preventDefault()
-        const username = usernameRef.current.value;
-        submitUsername(index, username)
-    }
-
-    return <>
-        <form className={"battleUserInfoForm"}>
-            <p>Choose <b>Player {index+1}</b> username</p>
-            <input type={"text"} ref={usernameRef}/>
-            <button onClick={handleUsername}>Submit</button>
-        </form>
-    </>
-
-}
+    return <form className="battleUserInfoForm" onSubmit={handleUsername}>
+        <p>Choose <b>Player {index + 1}</b> username</p>
+        <input
+            className={errorText ? "battleUserInfoInputError" : null}
+            type="text"
+            ref={usernameRef}
+            onChange={() => setErrorText(null)}
+            required
+        />
+        {errorText ? <p className={"battleUserInfoError"}>{errorText}</p> : null}
+        <div className={"battleUserInfoSubmitButtonContainer"}>
+            <button type="submit" className={"battleUserInfoSubmitButton"}>Submit</button>
+        </div>
+    </form>;
+};
 
 export default BattleUserInput;

@@ -6,9 +6,9 @@ import BattleContext from "../../contexts/BattleContext.jsx";
 import BattleButtons from "../battlebuttons/BattleButtons.jsx";
 
 const Battle = () => {
-    const {states, submitUsername, reset, battle, restart, finish, statesNotNull} = useBattle();
+    const {states, submit, reset, battle, restart, finish, statesNotNull} = useBattle();
 
-    return <BattleContext.Provider value={{submitUsername, reset, battle, restart, finish, statesNotNull}}>
+    return <BattleContext.Provider value={{submit, reset, battle, restart, finish, statesNotNull}}>
         <div className={"battleContainer"}>
             <h1 className={"battleTitle"}>Let&#39;s Get Ready to Rumble 🥊</h1>
             <div className={"battleUsersContainer"}>

@@ -1,8 +1,8 @@
-import { useReducer, useState } from "react";
-import { INITIAL_VALUE } from "../constants/battleConstants.js";
+import {useReducer, useState} from "react";
+import {INITIAL_VALUE} from "../constants/battleConstants.js";
 import gitRepository from "../repositories/gitRepository.js";
-import { actionCreator, BATTLE, RESET, RESTART, SUBMIT_USERNAME } from "../services/actions.js";
-import { reducer } from "../services/reducer.js";
+import {actionCreator, BATTLE, RESET, RESTART, SUBMIT} from "../services/actions.js";
+import {reducer} from "../services/reducer.js";
 
 export default function useBattle() {
     const [finish, setFinish] = useState(false);
@@ -37,14 +37,16 @@ export default function useBattle() {
         setFinish(false);
     };
 
-    const reset = index => dispatch(actionCreator(RESET, { index }));
+    const reset = index => dispatch(actionCreator(RESET, {index}));
 
-    const submitUsername = async (index, username) => {
+    const submit = async (index, username) => {
         try {
-            const { followers, avatar_url, login } = await gitRepository.getUserInfo(username);
-            dispatch(actionCreator(SUBMIT_USERNAME, { index, followers, avatar_url, login }));
+            const {followers, avatar_url, login} = await gitRepository.getUserInfo(username);
+            dispatch(actionCreator(SUBMIT, {index, followers, avatar_url, login}));
+            return 200;
         } catch (e) {
             console.error(e);
+            return e.status;
         }
     };
 
@@ -52,5 +54,5 @@ export default function useBattle() {
         return states.every(value => value !== null);
     }
 
-    return { states, submitUsername, reset, battle, restart, finish, statesNotNull};
+    return {states, submit, reset, battle, restart, finish, statesNotNull};
 }

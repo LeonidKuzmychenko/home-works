@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 10px;
 
   .battleUserCardContainer {
     border: 1px solid black;
@@ -24,6 +25,10 @@
     .battleUserButtonContainer {
       display: flex;
       justify-content: center;
+
+      button{
+        padding: 2px 5px;
+      }
     }
   }
 }

@@ -10,7 +10,7 @@ const BattleUser = ({index, userInfo}) => {
     }
 
     return <div className={"battleUserContainer"}>
-        {userInfo.winner == null ? null : <h2>{userInfo.winner ? "Winner" : "Loser"}</h2>}
+        {userInfo.winner == null ? null : <h2>{userInfo.winner ? "Winner 🥳" : "Loser 🥵"}</h2>}
         <div className={"battleUserCardContainer"}>
             <img className={"battleUserImage"} src={userInfo.avatar_url} alt={"image"}/>
             <p className={"battleUserLogin"}>@{userInfo.login}</p>
