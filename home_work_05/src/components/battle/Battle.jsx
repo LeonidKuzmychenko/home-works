@@ -9,9 +9,10 @@ const Battle = () => {
 
     const [finish, setFinish] = useState(false);
 
-    // const actionCreator = (type, payload) => {
-    //     return {type, payload}
-    // }
+    const actionCreator = (type, payload) => {
+        return {type, payload}
+    }
+
     const reducer = (state, action) => {
         if (action.type === "submitUsername") {
             return state.map((user, idx) =>
@@ -62,10 +63,10 @@ const Battle = () => {
             const maxTotal = Math.max(...totals);
             const winner = totals.map(total => total === maxTotal);
 
-            dispatch({
-                type: "battle",
-                payload: {stars: stars, total: totals, winner: winner}
-            });
+            dispatch(actionCreator(
+                "battle",
+                {stars: stars, total: totals, winner: winner}
+            ));
 
             setFinish(true);
         } catch (e) {
@@ -74,24 +75,27 @@ const Battle = () => {
     };
 
     const restart = () => {
-        dispatch({type: "restart"});
+        dispatch(actionCreator(
+            "restart"
+        ));
         setFinish(false)
     }
 
     const reset = (index) => {
-        dispatch({type: "reset", payload: {index: index}})
+        dispatch(actionCreator(
+            "reset",
+            {index: index}
+        ));
     }
 
     const submitUsername = async (index, username) => {
         try {
             const userInfo = await gitRepository.getUserInfo(username)
-            dispatch({
-                type: "submitUsername",
-                payload: {
-                    index: index,
-                    ...userInfo
-                },
-            });
+            dispatch(
+                actionCreator(
+                    "submitUsername",
+                    {index: index, ...userInfo}
+                ));
         } catch (e) {
             console.log(e);
         }
