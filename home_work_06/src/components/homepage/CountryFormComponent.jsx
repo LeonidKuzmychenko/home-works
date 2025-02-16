@@ -1,36 +1,32 @@
-import countriesRepository from "../../repository/CountriesRepository.js";
-import {useEffect, useState} from "react";
-import "./CountryFormComponent.scss"
-import {NavLink} from "react-router-dom";
+import {useContext, useRef, useState} from "react";
+import "./CountryFormComponent.scss";
+import {useNavigate} from "react-router-dom";
+import CountryContext from "../../contexts/CountryContext.jsx";
 
 const CountryFormComponent = () => {
     const [activeCountry, setActiveCountry] = useState(0);
-    const [countries, setCountries] = useState(null);
+    const translationRef = useRef(null);
+    const {countries} = useContext(CountryContext);
 
-    useEffect(() => {
-        fetchCountries();
-    }, []);
-
-    const fetchCountries = async () => {
-        try {
-            const initCountries = await countriesRepository.getAllCountries();
-            setCountries(initCountries);
-        } catch (e) {
-            console.error(e);
-        }
-    };
+    const navigate = useNavigate();
 
     const handleCountryChange = (event) => {
-        const selectedIndex = event.target.selectedIndex;
-        setActiveCountry(selectedIndex);
+        setActiveCountry(event.target.selectedIndex);
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const countryName = countries[activeCountry].name.official;
+        const translation = translationRef.current.value;
+        navigate(`/countries/${countryName}?translation=${translation}`)
     };
 
     return (
-        <div className={"country-form-component"}>
+        <div className="country-form-component">
             <h2>Capital Form Component</h2>
-            {countries == null ? null : (
-                <form className={"country-form-component-form"}>
-                    <label className={"country-form-component-label"}>
+            {countries.length == null ? null :
+                <form className="country-form-component-form" onSubmit={handleSubmit}>
+                    <label className="country-form-component-label">
                         Select Capital
                         <select id="capital" name="capital" onChange={handleCountryChange}>
                             {countries.map((it, index) => (
@@ -40,19 +36,19 @@ const CountryFormComponent = () => {
                             ))}
                         </select>
                     </label>
-                    <label className={"country-form-component-label"}>
+                    <label className="country-form-component-label">
                         Select Translation
-                        <select id="translations" name="translations">
-                            {Object.keys(countries[activeCountry].translations).map((it, index) => (
+                        <select id="translations" name="translations" ref={translationRef}>
+                            {Object.keys(countries[activeCountry]?.translations || {}).map((it, index) => (
                                 <option key={index} value={it}>
                                     {it}
                                 </option>
                             ))}
                         </select>
                     </label>
-                    <button><NavLink to={"/county"}>Read more about {countries[activeCountry].name.common}</NavLink></button>
+                    <button type="submit">Read more about {countries[activeCountry]?.name.common}</button>
                 </form>
-            )}
+            }
         </div>
     );
 };

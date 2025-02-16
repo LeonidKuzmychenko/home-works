@@ -10,10 +10,6 @@ const Menu = () => {
         {
             path: "/countries",
             title: "Countries"
-        },
-        {
-            path: "/country",
-            title: "Country"
         }
     ]
 

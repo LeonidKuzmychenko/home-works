@@ -4,8 +4,28 @@ import CountryRoute from "./routes/CountryRoute.jsx";
 import {RouterProvider, createBrowserRouter} from "react-router-dom";
 import ErrorRoute from "./routes/ErrorRoute.jsx";
 import Layout from "./pages/Layout.jsx";
+import {useEffect, useState} from "react";
+import countriesRepository from "./repository/CountriesRepository.js";
+import CountryContext from "./contexts/CountryContext.jsx";
 
 function App() {
+
+    const [countries, setCountries] = useState([]);
+
+    useEffect(() => {
+        const fetchCountries = async () => {
+            try {
+                const initCountries = await countriesRepository.getAllCountries();
+                setCountries(initCountries);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        fetchCountries();
+    }, []);
+
+
 
     const router = createBrowserRouter([
         {
@@ -17,11 +37,11 @@ function App() {
                     element: <HomeRoute/>
                 },
                 {
-                    path: 'countries',
+                    path: '/countries/',
                     element: <CountriesRoute/>
                 },
                 {
-                    path: 'country',
+                    path: '/countries/:name',
                     element: <CountryRoute/>
                 }
             ],
@@ -29,7 +49,9 @@ function App() {
         },
     ]);
     return (
-        <RouterProvider router={router}/>
+        <CountryContext.Provider value={{countries}}>
+            <RouterProvider router={router}/>
+        </CountryContext.Provider>
     )
 }
 

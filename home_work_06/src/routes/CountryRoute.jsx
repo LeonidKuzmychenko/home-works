@@ -1,6 +1,8 @@
+import CountryCardComponent from "../components/countrypage/CountryCardComponent.jsx";
+
 const CountryRoute = () => {
  return <>
-    CountryRoute
+    <CountryCardComponent/>
  </>
 }
 
