@@ -17,11 +17,11 @@ function App() {
                     element: <HomeRoute/>
                 },
                 {
-                    path: '/countries',
+                    path: 'countries',
                     element: <CountriesRoute/>
                 },
                 {
-                    path: '/country',
+                    path: 'country',
                     element: <CountryRoute/>
                 }
             ],

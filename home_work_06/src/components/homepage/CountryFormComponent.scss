@@ -1,0 +1,18 @@
+.country-form-component{
+  display: inline-flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: lightgray;
+}
+
+.country-form-component-form{
+  display: inline-flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.country-form-component-label{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
