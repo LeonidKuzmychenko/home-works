@@ -1,6 +1,13 @@
-.country-list {
+.country-list-container{
+
   display: inline-flex;
   flex-direction: column;
-  padding: 10px;
-  background-color: lightgray;
+  gap: 10px;
+
+  .country-list {
+    display: inline-flex;
+    flex-direction: column;
+    padding: 10px;
+    background-color: lightgray;
+  }
 }

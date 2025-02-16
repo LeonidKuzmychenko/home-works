@@ -1,27 +1,30 @@
 import {useContext, useEffect, useState} from "react";
 import CountryContext from "../../contexts/CountryContext.jsx";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import "./CountryCardComponent.scss"
 
 const CountryCardComponent = () => {
     const [country, setCountry] = useState(null);
-    const {countries} = useContext(CountryContext);
+    const {countries, removeCountryByName} = useContext(CountryContext);
+    const [searchParams] = useSearchParams()
     const {name} = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const countryByName = getCountryByName(name);
-        console.log("name: " + name)
-        console.log("findCountry: " + countryByName)
         setCountry(countryByName)
     }, []);
 
     const getCountryByName = (name) => {
-        if (!name) return null;
-        console.log("countries: " + countries)
         return countries.find(it =>
             it.name.official === name
         ) || null;
     };
+
+    const handleDelete = () => {
+        removeCountryByName(name);
+        navigate("/countries")
+    }
 
     const renderJson = (data) => {
         if (typeof data === "object" && data !== null) {
@@ -38,10 +41,26 @@ const CountryCardComponent = () => {
         return data;
     };
 
-    return country == null ? null : <div className="country-list">
-        <h3>{country.name.common}</h3>
-        {renderJson(country)}
+    const getOfficialTranslation = () => {
+        const translations = country.translations;
+        const key = searchParams.get("translation")
+
+        if (key && translations[key]?.official) {
+            return translations[key].official;
+        }
+        const firstKey = Object.keys(translations)[0];
+        return firstKey ? translations[firstKey].official : null;
+    };
+
+    return <div className="country-list-container">
+        {country == null ? null : <div className="country-list">
+            <h3>{getOfficialTranslation()}</h3>
+            {renderJson(country)}
+            <button onClick={() => handleDelete()}>Delete</button>
+        </div>}
+        <button onClick={() => navigate("/countries")}>Back to Countries</button>
     </div>
+
 }
- 
+
 export default CountryCardComponent;

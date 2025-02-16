@@ -1,0 +1,19 @@
+.countries-list-component {
+  display: inline-flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: lightgray;
+
+  .countries-list-component-list{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .countries-list-component-item {
+    display: flex;
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+  }
+}
+

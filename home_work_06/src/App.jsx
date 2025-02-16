@@ -1,7 +1,7 @@
 import HomeRoute from "./routes/HomeRoute.jsx";
 import CountriesRoute from "./routes/CountriesRoute.jsx";
 import CountryRoute from "./routes/CountryRoute.jsx";
-import {RouterProvider, createBrowserRouter} from "react-router-dom";
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import ErrorRoute from "./routes/ErrorRoute.jsx";
 import Layout from "./pages/Layout.jsx";
 import {useEffect, useState} from "react";
@@ -25,19 +25,26 @@ function App() {
         fetchCountries();
     }, []);
 
+    const removeCountryByName = (name) => {
+        console.log("removeCountryByName")
+        const filterCountries = countries.filter(
+            (country) => country.name.official !== name
+        )
+        setCountries(filterCountries)
+    };
 
 
     const router = createBrowserRouter([
         {
             path: '/',
             element: <Layout/>,
-            children:[
+            children: [
                 {
                     path: '/',
                     element: <HomeRoute/>
                 },
                 {
-                    path: '/countries/',
+                    path: '/countries',
                     element: <CountriesRoute/>
                 },
                 {
@@ -49,7 +56,7 @@ function App() {
         },
     ]);
     return (
-        <CountryContext.Provider value={{countries}}>
+        <CountryContext.Provider value={{countries, removeCountryByName}}>
             <RouterProvider router={router}/>
         </CountryContext.Provider>
     )

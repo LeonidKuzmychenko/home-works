@@ -7,7 +7,6 @@ const CountryFormComponent = () => {
     const [activeCountry, setActiveCountry] = useState(0);
     const translationRef = useRef(null);
     const {countries} = useContext(CountryContext);
-
     const navigate = useNavigate();
 
     const handleCountryChange = (event) => {
