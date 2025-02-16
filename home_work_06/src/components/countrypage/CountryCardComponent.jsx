@@ -47,7 +47,6 @@ const CountryCardComponent = () => {
             {renderJson(country)}
             <button onClick={() => handleDelete()}>Delete</button>
         </div>}
-        <button onClick={() => navigate("/countries")}>Back to Countries</button>
     </div>
 
 }
