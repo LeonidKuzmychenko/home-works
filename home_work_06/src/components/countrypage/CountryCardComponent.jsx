@@ -5,7 +5,7 @@ import "./CountryCardComponent.scss"
 
 const CountryCardComponent = () => {
     const [country, setCountry] = useState(null);
-    const {countries, removeCountryByName} = useContext(CountryContext);
+    const {countries, removeCountryByName, getOfficialTranslation} = useContext(CountryContext);
     const [searchParams] = useSearchParams()
     const {name} = useParams();
     const navigate = useNavigate();
@@ -41,20 +41,9 @@ const CountryCardComponent = () => {
         return data;
     };
 
-    const getOfficialTranslation = () => {
-        const translations = country.translations;
-        const key = searchParams.get("translation")
-
-        if (key && translations[key]?.official) {
-            return translations[key].official;
-        }
-        const firstKey = Object.keys(translations)[0];
-        return firstKey ? translations[firstKey].official : null;
-    };
-
     return <div className="country-list-container">
         {country == null ? null : <div className="country-list">
-            <h3>{getOfficialTranslation()}</h3>
+            <h3>{getOfficialTranslation(country, searchParams.get("translation"))}</h3>
             {renderJson(country)}
             <button onClick={() => handleDelete()}>Delete</button>
         </div>}

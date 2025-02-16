@@ -1,29 +1,39 @@
-import {useContext, useRef, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import "./CountryFormComponent.scss";
 import {useNavigate} from "react-router-dom";
 import CountryContext from "../../contexts/CountryContext.jsx";
 
 const CountryFormComponent = () => {
     const [activeCountry, setActiveCountry] = useState(0);
-    const translationRef = useRef(null);
-    const {countries} = useContext(CountryContext);
+    const [translation, setTranslation] = useState(null);
+    const {countries, getOfficialTranslation} = useContext(CountryContext);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (countries.length > 0) {
+            const firstTranslation = Object.keys(countries[0]?.translations || {})[0] || null;
+            setTranslation(firstTranslation);
+        }
+    }, [countries]);
+
     const handleCountryChange = (event) => {
-        setActiveCountry(event.target.selectedIndex);
+        setActiveCountry(event.target.value);
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const countryName = countries[activeCountry].name.official;
-        const translation = translationRef.current.value;
         navigate(`/countries/${countryName}?translation=${translation}`)
     };
+
+    const handleTranslation = (event) =>{
+        setTranslation(event.target.value);
+    }
 
     return (
         <div className="country-form-component">
             <h2>Capital Form Component</h2>
-            {countries.length == null ? null :
+            {countries == null || countries.length === 0 ? null :
                 <form className="country-form-component-form" onSubmit={handleSubmit}>
                     <label className="country-form-component-label">
                         Select Capital
@@ -37,7 +47,7 @@ const CountryFormComponent = () => {
                     </label>
                     <label className="country-form-component-label">
                         Select Translation
-                        <select id="translations" name="translations" ref={translationRef}>
+                        <select id="translations" name="translations" onChange={handleTranslation}>
                             {Object.keys(countries[activeCountry]?.translations || {}).map((it, index) => (
                                 <option key={index} value={it}>
                                     {it}
@@ -45,7 +55,7 @@ const CountryFormComponent = () => {
                             ))}
                         </select>
                     </label>
-                    <button type="submit">Read more about {countries[activeCountry]?.name.common}</button>
+                    <button type="submit">Read more about {getOfficialTranslation(countries[activeCountry], translation)}</button>
                 </form>
             }
         </div>
